@@ -168,9 +168,7 @@ gulp.task('sync', ['serve'], cb => {
 gulp.task('deploy', cb => {
   var http = require('http');
   const push = require('git-push');
-  const remote = argv.production ?
-    'https://github.com/{user}/{repo}.git' :
-    'https://github.com/{user}/{repo}-test.git';
+  const remote = 'https://github.com/markusl/react-starter-kit.git';
   push('./build', remote, function() {
     http.get('http://{site-name}.azurewebsites.net/', function() { cb(); })
       .on('error', function(err) {
