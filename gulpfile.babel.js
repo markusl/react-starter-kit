@@ -35,7 +35,7 @@ gulp.task('clean', cb => {
 
 // Static files
 gulp.task('assets', () => {
-  src.assets = 'src/public/**';
+  src.assets = ['src/public/**', '.deployment', 'deploy.cmd'];
   return gulp.src(src.assets)
     .pipe($.changed('build/public'))
     .pipe(gulp.dest('build/public'))
@@ -166,11 +166,18 @@ gulp.task('sync', ['serve'], cb => {
 
 // Deploy via Git
 gulp.task('deploy', cb => {
+  var http = require('http');
   const push = require('git-push');
   const remote = argv.production ?
     'https://github.com/{user}/{repo}.git' :
     'https://github.com/{user}/{repo}-test.git';
-  push('./build', remote, cb);
+  push('./build', remote, function() {
+    http.get('http://{site-name}.azurewebsites.net/', function() { cb(); })
+      .on('error', function(err) {
+        console.log($.util.colors.red(err.message));
+        cb();
+      });
+  });
 });
 
 // Run PageSpeed Insights
